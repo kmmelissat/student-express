@@ -5,7 +5,7 @@ const app = express();
 // Middleware
 app.use(express.json());
 
-// Single Hello World endpoint
+//Endpoints
 app.get('/', (req, res) => {
   res.json({ message: 'Hello World!' });
 });
