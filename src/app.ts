@@ -10,4 +10,12 @@ app.get('/', (req, res) => {
   res.json({ message: 'Hello World!' });
 });
 
+app.get('/api/students', (req, res) => {
+  res.json({ message: 'Hello World!' });
+});
+
+app.post('/api/students', (req, res) => {
+  res.json({ message: 'Hello World!' });
+});
+
 export default app; 
