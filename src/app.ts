@@ -26,7 +26,7 @@ const swaggerOptions = {
       },
     ],
   },
-  apis: ["./src/app.ts"], // Path to the API files
+  apis: ["./src/app.ts"], 
 };
 
 const swaggerSpec = swaggerJsdoc(swaggerOptions);
@@ -36,6 +36,12 @@ app.use(express.json());
 
 // Swagger UI
 app.use("/api", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
+//validar email
+const isValidEmail = (email: string): boolean => {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
+};
 
 /**
  * @swagger
@@ -162,12 +168,54 @@ app.get("/students", (req, res) => {
  *                   type: string
  *                   example: Student created successfully
  *       400:
- *         description: Bad request
+ *         description: Bad request - Validation errors
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Validation error message
+ *                 errors:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *                   example: ["Name is required", "Age must be a number greater than 0", "Email format is invalid"]
  */
 app.post("/students", (req, res) => {
-  const newStudent = req.body;
+  const { name, age, email, id } = req.body;
+  const errors: string[] = [];
+
+  //validar nombree
+  if (!name || typeof name !== "string" || name.trim() === "") {
+    errors.push("Name is required");
+  }
+
+  //validar edad
+  if (!age || typeof age !== "number" || age <= 0) {
+    errors.push("Age must be a number greater than 0");
+  }
+
+  //validar email
+  if (!email || typeof email !== "string" || !isValidEmail(email)) {
+    errors.push("Email format is invalid");
+  }
+
+  //si hay errores, devolver 400
+  if (errors.length > 0) {
+    return res.status(400).json({
+      error: "Validation failed",
+      errors: errors,
+    });
+  }
+
+  const newStudent = { id, name: name.trim(), age, email };
   students.push(newStudent);
-  res.status(201).json({ message: "Student created successfully" });
+  res.status(201).json({
+    message: "Student created successfully",
+    student: newStudent,
+  });
 });
 
 export default app;
