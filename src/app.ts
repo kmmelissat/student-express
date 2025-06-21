@@ -16,12 +16,14 @@ app.get("/", (req, res) => {
   res.json({ message: "Hello World!" });
 });
 
-app.get("/api/students", (req, res) => {
-  res.json({ message: "Hello World!" });
+app.get("/students", (req, res) => {
+  res.json({ students });
 });
 
-app.post("/api/students", (req, res) => {
-  res.json({ message: "Hello World!" });
+app.post("/students", (req, res) => {
+  const newStudent = req.body;
+  students.push(newStudent);
+  res.status(201).json({ message: "Student created successfully" });
 });
 
 export default app;
